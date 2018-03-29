@@ -1,7 +1,4 @@
 package com.example.t00533766.beam;
-import android.nfc.tech.NdefFormatable;
-import android.os.LocaleList;
-import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 
@@ -29,21 +26,15 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.nfc.NfcEvent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.provider.Settings;
 import android.text.format.Time;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.nio.charset.Charset;
-import java.util.Locale;
+import java.util.Arrays;
 
 
 public class MainActivity extends Activity implements CreateNdefMessageCallback,
@@ -76,6 +67,13 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
         if (mNfcAdapter.isNdefPushEnabled()){
             Log.d(TAG, "onCreate: PUSH ENABLED");
         }
+
+
+
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!=null)
+        Log.d(TAG, "onNewIntent: =========="+bundle.size());
     }
 
 
@@ -90,20 +88,10 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
         String text = ("Beam me up!\n\n" +
                 "Beam Time: " + time.format("%H:%M:%S"));
 
-
         return new NdefMessage(
                 new NdefRecord[] {
-                        createMimeRecord("text/plain", text.getBytes())
-                        /**
-                         * The Android Application Record (AAR) is commented out. When a device
-                         * receives a push with an AAR in it, the application specified in the AAR
-                         * is guaranteed to run. The AAR overrides the tag dispatch system.
-                         * You can add it back in to guarantee that this
-                         * activity starts when receiving a beamed message. For now, this code
-                         * uses the tag dispatch system.
-                        */
-                        ,NdefRecord.createApplicationRecord("com.example.t00533766.beam"),
-                        NdefRecord.createTextRecord("ENG","THIS IS THE TEXT")
+                        createMimeRecord(text.getBytes())
+                        //,NdefRecord.createApplicationRecord("com.example.t00533766.beam"),
                 });
     }
 
@@ -137,7 +125,7 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
         super.onResume();
         Log.d(TAG, "onResume: " +getIntent().getAction());
         // Check to see that the Activity started due to an Android Beam
-        if (Intent.ACTION_MAIN.equals(getIntent().getAction())) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             processIntent(getIntent());
             Log.d(TAG, "onResume: =----------=-=-=-=-=-");
         }
@@ -146,6 +134,11 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
     @Override
     public void onNewIntent(Intent intent) {
         Log.d(TAG, "onNewIntent: ");
+
+        Bundle bundle = intent.getExtras();
+
+        Log.d(TAG, "onNewIntent: =========="+bundle.size());
+
         // onResume gets called after this to handle the intent
         setIntent(intent);
     }
@@ -156,6 +149,7 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
     void processIntent(Intent intent) {
         Log.d(TAG, "processIntent: ");
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+
         // only one message sent during the beam
         if (rawMsgs!=null) {
             NdefMessage msg = (NdefMessage) rawMsgs[0];
@@ -168,12 +162,12 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
     /**
      * Creates a custom MIME type encapsulated in an NDEF record
      *
-     * @param mimeType
      */
-    public NdefRecord createMimeRecord(String mimeType, byte[] payload) {
-        NdefRecord mimeRecord = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, mimeType.getBytes(), new byte[0], payload);
+    public NdefRecord createMimeRecord(byte[] payload) {
+        NdefRecord mimeRecord = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, payload, new byte[0], payload);
         Log.d(TAG, "createMimeRecord: ");
 
+        Log.d(TAG, "createMimeRecord: "+mimeRecord.toMimeType()+"           "+ Arrays.toString(mimeRecord.getPayload()));
         return mimeRecord;
     }
 
