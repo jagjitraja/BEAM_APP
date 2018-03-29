@@ -128,6 +128,10 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             processIntent(getIntent());
             Log.d(TAG, "onResume: =----------=-=-=-=-=-");
+
+        } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
+            processIntent(getIntent());
+            Log.d(TAG, "onResume: =----------=-=-=-=-=-");
         }
     }
 
@@ -149,7 +153,6 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
     void processIntent(Intent intent) {
         Log.d(TAG, "processIntent: ");
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
         // only one message sent during the beam
         if (rawMsgs!=null) {
             NdefMessage msg = (NdefMessage) rawMsgs[0];
