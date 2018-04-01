@@ -89,10 +89,13 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
                 "Beam Time: " + time.format("%H:%M:%S"));
 
         return new NdefMessage(
-                new NdefRecord[] {
-                        createMimeRecord(text.getBytes())
+                new NdefRecord[]{NdefRecord.createUri("geo:"+50.6745 +","  + 123)}
+               // new NdefRecord[] {
+                //        createMimeRecord(text.getBytes())
                         //,NdefRecord.createApplicationRecord("com.example.t00533766.beam"),
-                });
+                //}
+                //
+                );
     }
 
     /**
