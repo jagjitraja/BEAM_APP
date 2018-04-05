@@ -85,17 +85,12 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
         Log.d(TAG, "createNdefMessage: ");
         Time time = new Time();
         time.setToNow();
+        // new NdefRecord[]{NdefRecord.createUri("geo:"+50.6745 +","  + 123)}
         String text = ("Beam me up!\n\n" +
                 "Beam Time: " + time.format("%H:%M:%S"));
-
         return new NdefMessage(
-                new NdefRecord[]{NdefRecord.createUri("geo:"+50.6745 +","  + 123)}
-               // new NdefRecord[] {
-                //        createMimeRecord(text.getBytes())
-                        //,NdefRecord.createApplicationRecord("com.example.t00533766.beam"),
-                //}
-                //
-                );
+                new NdefRecord[] {createMimeRecord(text.getBytes())});
+        //}
     }
 
     /**
@@ -170,7 +165,7 @@ public class MainActivity extends Activity implements CreateNdefMessageCallback,
      *
      */
     public NdefRecord createMimeRecord(byte[] payload) {
-        NdefRecord mimeRecord = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, payload, new byte[0], payload);
+        NdefRecord mimeRecord = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload);
         Log.d(TAG, "createMimeRecord: ");
 
         Log.d(TAG, "createMimeRecord: "+mimeRecord.toMimeType()+"           "+ Arrays.toString(mimeRecord.getPayload()));
